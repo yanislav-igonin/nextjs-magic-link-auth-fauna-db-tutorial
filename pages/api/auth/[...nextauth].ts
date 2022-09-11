@@ -1,8 +1,15 @@
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 import nodemailer from 'nodemailer';
+import { Client as FaunaClient } from 'faunadb';
+import { FaunaAdapter } from '@next-auth/fauna-adapter';
+
+const client = new FaunaClient({
+  secret: process.env.FAUNA_SECRET_KEY || '',
+});
 
 export default NextAuth({
+  debug: process.env.NODE_ENV !== "production",
   providers: [
     EmailProvider({
       server: {
@@ -19,4 +26,5 @@ export default NextAuth({
       maxAge: 10 * 60, // Magic links are valid for 10 min only
     }),
   ],
+  adapter: FaunaAdapter(client),
 });
