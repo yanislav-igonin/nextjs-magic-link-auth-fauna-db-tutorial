@@ -10,4 +10,8 @@ export default NextAuth({
   debug: config.app.isProduction,
   providers: [EmailProvider(config.email)],
   adapter: FaunaAdapter(client),
+  pages: {
+    signIn: '/auth/signin',
+    signOut: '/',
+  },
 });

@@ -31,7 +31,7 @@ export default function Home() {
             </button>
           </div>
         ) : (
-          <Link href="/api/auth/signin">
+          <Link href="/auth/signin">
             <a className="px-6 py-3 rounded-md text-lg text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 transition">
               Get started
             </a>
