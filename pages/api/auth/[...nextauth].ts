@@ -1,30 +1,13 @@
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
-import nodemailer from 'nodemailer';
 import { Client as FaunaClient } from 'faunadb';
 import { FaunaAdapter } from '@next-auth/fauna-adapter';
+import { config } from '@/config';
 
-const client = new FaunaClient({
-  secret: process.env.FAUNA_SECRET_KEY || '',
-});
+const client = new FaunaClient(config.fauna);
 
 export default NextAuth({
-  debug: process.env.NODE_ENV !== "production",
-  providers: [
-    EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: process.env.EMAIL_SERVER_PORT 
-          ? parseInt(process.env.EMAIL_SERVER_PORT, 10)
-          : 587,
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
-        },
-      },
-      from: process.env.EMAIL_FROM,
-      maxAge: 10 * 60, // Magic links are valid for 10 min only
-    }),
-  ],
+  debug: config.app.isProduction,
+  providers: [EmailProvider(config.email)],
   adapter: FaunaAdapter(client),
 });
