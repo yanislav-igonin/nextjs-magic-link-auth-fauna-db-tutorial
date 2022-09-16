@@ -24,7 +24,7 @@ export default function Home() {
             </p>
 
             <button
-              onClick={signOut}
+              onClick={() => signOut()}
               className="font-semibold underline opacity-70 hover:opacity-100"
             >
               Sign Out
