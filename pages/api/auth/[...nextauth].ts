@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth';
+import NextAuth, { User } from 'next-auth';
 import EmailProvider, { SendVerificationRequestParams } from 'next-auth/providers/email';
 import { Client as FaunaClient } from 'faunadb';
 import { FaunaAdapter } from '@next-auth/fauna-adapter';
@@ -33,12 +33,36 @@ const sendVerificationRequest = ({ identifier, url }: SendVerificationRequestPar
   });
 };
 
+const sendWelcomeEmail = async ({ user }: { user: User }) => {
+  const { email } = user;
+
+  try {
+    const emailFile = readFileSync(path.join(emailsDir, 'welcome.html'), {
+      encoding: 'utf8',
+    });
+    const emailTemplate = Handlebars.compile(emailFile);
+    await transporter.sendMail({
+      from: `"⚡ Magic NextAuth" ${process.env.EMAIL_FROM}`,
+      to: email,
+      subject: 'Welcome to Magic NextAuth! 🎉',
+      html: emailTemplate({
+        base_url: process.env.NEXTAUTH_URL,
+        support_email: 'support@alterclass.io',
+      }),
+    });
+  } catch (error) {
+    console.log(`❌ Unable to send welcome email to user (${email})`);
+  }
+};
+
+
 export default NextAuth({
   debug: config.app.isProduction,
-  providers: [EmailProvider({maxAge: config.email.maxAge, sendVerificationRequest})],
+  providers: [EmailProvider({ maxAge: config.email.maxAge, sendVerificationRequest })],
   adapter: FaunaAdapter(client),
   pages: {
     signIn: '/auth/signin',
     signOut: '/',
   },
+  events: { createUser: sendWelcomeEmail }
 });
