@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { BoltIcon } from '@heroicons/react/24/outline';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function Home() {
   const { data: session } = useSession();
@@ -22,6 +22,13 @@ export default function Home() {
             <p>
               Signed in as <strong>{session.user.email}</strong>
             </p>
+
+            <button
+              onClick={signOut}
+              className="font-semibold underline opacity-70 hover:opacity-100"
+            >
+              Sign Out
+            </button>
           </div>
         ) : (
           <Link href="/api/auth/signin">
